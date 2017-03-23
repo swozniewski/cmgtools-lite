@@ -15,8 +15,8 @@ c = ComponentCreator()
 # ggH135_1 = c.makeMCComponentFromEOS('ggH135_rawaod', 'ggH135_rawaod', '/store/group/phys_higgs/cmshtt/steggema/HPSatHLTv5/GluGluHToTauTau_M125_13TeV_powheg_pythia8/TauHPSatHLTFine/161117_103941/0001/')
 
 
-ggH135_0 = c.makeMCComponentFromEOS('ggH135_rawaod', 'ggH135_rawaod', '/store/group/phys_tau/HLT2016/HPSatHLT/GluGluHToTauTau_M125_13TeV_powheg_pythia8/HPSatHLT/161206_134434/0000/')
-ggH135_1 = c.makeMCComponentFromEOS('ggH135_rawaod_2', 'ggH135_rawaod', '/store/group/phys_tau/HLT2016/HPSatHLT/GluGluHToTauTau_M125_13TeV_powheg_pythia8/HPSatHLT/161206_134434/0001/')
+ggH135_0 = c.makeMCComponentFromEOS('ggH135_rawaod', 'ggH135_rawaod', '/store/group/phys_tau/HLT2016/HPSatHLT_wSingle/GluGluHToTauTau_M125_13TeV_powheg_pythia8/HPSatHLT/170306_103643/0000/')
+ggH135_1 = c.makeMCComponentFromEOS('ggH135_rawaod_2', 'ggH135_rawaod', '/store/group/phys_tau/HLT2016/HPSatHLT_wSingle/GluGluHToTauTau_M125_13TeV_powheg_pythia8/HPSatHLT/170306_103643/0001/')
 
 
 selectedComponents = [ggH135_0, ggH135_1]

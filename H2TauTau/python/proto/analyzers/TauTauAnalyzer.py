@@ -193,7 +193,7 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
             pyl.associatedVertex = event.goodVertices[0]
             if not pyl.muonID('POG_ID_Medium_ICHEP'):
                 continue
-            if not pyl.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) < 0.3:
+            if not pyl.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) < 0.3:
                 continue
             if not self.testLegKine(pyl, ptcut=10, etacut=2.4):
                 continue
@@ -210,7 +210,7 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
             pyl.event = event
             if not pyl.mvaIDRun2('NonTrigSpring15MiniAOD', 'POG90'):
                 continue
-            if not pyl.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3:
+            if not pyl.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < 0.3:
                 continue
             if not self.testLegKine(pyl, ptcut=10, etacut=2.5):
                 continue

@@ -4,6 +4,7 @@ from PhysicsTools.Heppy.physicsobjects.Tau import Tau
 
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from CMGTools.H2TauTau.proto.analyzers.HTTGenAnalyzer import HTTGenAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.TriggerAnalyzer import TriggerInfo
 
 class TauHLTAnalyzer(Analyzer):
 
@@ -11,6 +12,8 @@ class TauHLTAnalyzer(Analyzer):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(TauHLTAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
+
+        self.triggers = ['MC_LooseIsoPFTau20_v1',  'MC_LooseIsoPFTau50_Trk30_eta2p1_v1', 'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v3', 'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v5']
 
     def declareHandles(self):
 
@@ -41,6 +44,22 @@ class TauHLTAnalyzer(Analyzer):
 
         self.handles['hlt_taus'] = AutoHandle(
             ('hltHpsPFTauProducer', '', 'TEST'),
+            'std::vector<reco::PFTau>',
+            lazy=False,
+            mayFail=True,
+            disableAtFirstFail=False
+        )
+
+        self.handles['hlt_classic_taus'] = AutoHandle(
+            ('hltPFTausReg', '', 'TEST'),
+            'std::vector<reco::PFTau>',
+            lazy=False,
+            mayFail=True,
+            disableAtFirstFail=False
+        )
+        
+        self.handles['hlt_classic_single_taus'] = AutoHandle(
+            ('hltPFTaus', '', 'TEST'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -108,6 +127,17 @@ class TauHLTAnalyzer(Analyzer):
             disableAtFirstFail=False
         )
 
+        self.handles['TriggerResults'] = AutoHandle(
+            ('TriggerResults', '', 'TEST'), 'edm::TriggerResults')
+
+        # self.handles['TriggerResults'] = AutoHandle(
+            # ('TriggerResults', '', 'HLT'), 'edm::TriggerResults')
+
+        self.handles['triggerObjects'] = AutoHandle(
+            ('selectedPatTriggerCustom', '', 'TEST'),
+            'std::vector<pat::TriggerObjectStandAlone>'
+            )
+
     def beginLoop(self, setup):
         print self, self.__class__
         super(TauHLTAnalyzer, self).beginLoop(setup)
@@ -145,6 +175,19 @@ class TauHLTAnalyzer(Analyzer):
             if self.handles['hlt_taus']._exception is None:
                 import pdb; pdb.set_trace()
 
+        event.hlt_classic_taus = []
+        if self.handles['hlt_classic_taus'].isValid():
+            event.hlt_classic_taus = [Tau(tau) for tau in self.handles['hlt_classic_taus'].product()]
+            for tau in event.hlt_classic_taus:
+                tau.dm = -10 # dummy so it behaves as the other taus
+                tau.loose_db_iso = -10. # dummy so it behaves as the other taus
+
+        event.hlt_classic_single_taus = []
+        if self.handles['hlt_classic_single_taus'].isValid():
+            event.hlt_classic_single_taus = [Tau(tau) for tau in self.handles['hlt_classic_single_taus'].product()]
+            for tau in event.hlt_classic_single_taus:
+                tau.dm = -10 # dummy so it behaves as the other taus
+                tau.loose_db_iso = -10. # dummy so it behaves as the other taus
 
         event.hlt_single_taus = []
         if self.handles['hltSingle_taus'].isValid():
@@ -159,7 +202,14 @@ class TauHLTAnalyzer(Analyzer):
         else:
             # print self.handles['hlt_taus']._exception
             if self.handles['hltSingle_taus']._exception is None:
-                import pdb; pdb.set_trace()
+                print 'No single HLT taus'
+                # import pdb; pdb.set_trace()
+
+        event.taus = [tau for tau in event.taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
+        event.hlt_taus = [tau for tau in event.hlt_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
+        event.hlt_classic_taus = [tau for tau in event.hlt_classic_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
+        event.hlt_classic_single_taus = [tau for tau in event.hlt_classic_single_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
+        event.hlt_single_taus = [tau for tau in event.hlt_single_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
 
 
         event.genParticles = self.handles['genParticles'].product()
@@ -171,6 +221,7 @@ class TauHLTAnalyzer(Analyzer):
         def addInfo(tau, cands=None, maxDeltaR=None):
             HTTGenAnalyzer.genMatch(event, tau, event.gentauleps, event.genleps, [], 
                  dR=0.2, matchAll=True)
+            HTTGenAnalyzer.attachGenStatusFlag(tau)
             self.tauIsoBreakdown(tau, cands, maxDeltaR=maxDeltaR)
             tau.nphotons = sum(1 for cand in TauHLTAnalyzer.tauFilteredPhotons(tau))
 
@@ -184,8 +235,91 @@ class TauHLTAnalyzer(Analyzer):
         for tau in event.hlt_taus :
             addInfo(tau, [c for c in hltPfCandidates if abs(c.pdgId()) == 211], maxDeltaR=0.5)
 
+        for tau in event.hlt_classic_taus:
+            addInfo(tau, [c for c in hltPfCandidates if abs(c.pdgId()) == 211], maxDeltaR=0.5)
+
+        for tau in event.hlt_classic_single_taus:
+            addInfo(tau, [c for c in hltSinglePfCandidates if abs(c.pdgId()) == 211], maxDeltaR=0.5)
+
         for tau in event.hlt_single_taus:
             addInfo(tau, [c for c in hltSinglePfCandidates if abs(c.pdgId()) == 211], maxDeltaR=0.5)
+
+        # Counts offline gen-matched tauh
+        event.offline_35 = sum(1 for tau in event.taus if tau.pt() > 35. and tau.gen_match == 5)
+        event.offline_30 = sum(1 for tau in event.taus if tau.pt() > 30. and tau.gen_match == 5)
+        event.offline_20 = sum(1 for tau in event.taus if tau.pt() > 20. and tau.gen_match == 5)
+
+        #
+        if not hasattr(event, 'genTauJets'):
+            HTTGenAnalyzer.getGenTauJets(event)
+        event.gen_taus_35 = sum(1 for tau in event.genTauJets if tau.pt() > 35)
+
+        # Counts offline tauh not matched to jet
+        event.offline_nojet_35 = sum(1 for tau in event.taus if tau.pt() > 35. and tau.gen_match != 6)
+        event.offline_nojet_30 = sum(1 for tau in event.taus if tau.pt() > 30. and tau.gen_match != 6)
+        event.offline_nojet_20 = sum(1 for tau in event.taus if tau.pt() > 20. and tau.gen_match != 6)
+
+        # event.trigger_infos = []
+
+        triggerBits = self.handles['TriggerResults'].product()
+        names = event.input.object().triggerNames(triggerBits)
+
+        # # Get trigger names with:
+        # print [n for n in names.triggerNames() if 'Tau' in n]
+
+        for trigger_name in self.triggers:
+            index = names.triggerIndex(trigger_name)
+            if index == len(triggerBits):
+                setattr(event, trigger_name, False)
+                continue
+
+            fired = triggerBits.accept(index)
+            if fired:
+                setattr(event, trigger_name, True)
+            else:
+                setattr(event, trigger_name, False)
+
+            # event.trigger_infos.append(TriggerInfo(trigger_name, index, fired))
+
+        iso_vals_25 = []
+        iso_vals_30 = []
+        iso_vals_35 = []
+        iso_vals_dm_35 = []
+        iso_vals_40 = []
+        for tau in event.hlt_taus:
+            iso = tau.chargedPtSumIso #+ max(0., tau.gammaPtSumIso - event.rho * 0.1752)
+            pt = tau.pt()
+            dm = tau.dm
+            if dm and pt > 35.:
+                iso_vals_dm_35.append(iso)
+            if pt > 25.:
+                iso_vals_25.append(iso)
+            if pt > 30.:
+                iso_vals_30.append(iso)
+            if pt > 35.:
+                iso_vals_35.append(iso)
+            if pt > 40.:
+                iso_vals_40.append(iso)
+
+        event.min_max_iso_to_pass_25 = sorted(iso_vals_25)[1] if len(iso_vals_25) > 1 else 999.
+        event.min_max_iso_to_pass_30 = sorted(iso_vals_30)[1] if len(iso_vals_30) > 1 else 999.
+        event.min_max_iso_to_pass_35 = sorted(iso_vals_35)[1] if len(iso_vals_35) > 1 else 999.
+        event.min_max_iso_to_pass_40 = sorted(iso_vals_40)[1] if len(iso_vals_40) > 1 else 999.
+
+        event.min_max_iso_to_pass_dm_35 = sorted(iso_vals_dm_35)[1] if len(iso_vals_dm_35) > 1 else 999.
+
+        # triggerObjects = self.handles['triggerObjects'].product()
+        # for to in triggerObjects:
+        #     to.unpackPathNames(names)
+        #     for info in event.trigger_infos:
+        #         if to.hasPathName(trigger_name):
+        #             if to in info.objects:
+        #                 continue
+        #             print 'TO name', [n for n in to.filterLabels()], to.hasPathName(info.name, False)
+        #             info.object_names.append('')
+        #             info.objects.append(to)
+        #             info.objIds.add(abs(to.pdgId()))
+        # import pdb; pdb.set_trace()
 
         return True
 
