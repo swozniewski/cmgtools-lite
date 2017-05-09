@@ -3,13 +3,17 @@ class VariableCfg(object):
 
     "binning" is a dict with either nbinsx, xmin, xmax for equidistant binning
     or nbinsx, bins=array([...]).
+
+    Can also be a 2D variable, in which case you need to pass a variable name 
+    with a colon as well as a binning with {'nbinsy', 'ymin', 'ymax'}
     '''
-    def __init__(self, name='mvis', binning=None, xtitle=None, unit=None, drawname=None):
+    def __init__(self, name='mvis', binning=None, xtitle=None, unit=None, drawname=None, ytitle=None):
         self.name = name
         self.drawname = name if drawname is None else drawname
         self.binning = {'nbinsx':10, 'xmin':0., 'xmax':200.} if binning is None else binning
         self.unit = unit
         self.xtitle = name if xtitle is None else xtitle
+        self.ytitle = ytitle
 
     def __str__(self):
         out = 'Variable: name={name}, binning={binning}'.format(name=self.name, binning=self.binning)

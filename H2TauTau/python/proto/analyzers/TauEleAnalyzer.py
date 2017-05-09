@@ -95,7 +95,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             pyl.rho = event.rho
             pyl.event = event
 
-            if pyl.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) > 0.3:
+            if pyl.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) > 0.3:
                 continue
 
             leptons.append(pyl)
@@ -209,14 +209,14 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
     def testLeg1Iso(self, leg, isocut):  # electron
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return leg.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < isocut
+        return leg.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < isocut
 
     def testLooseleg1(self, leg):  # electrons
         ''' pt, eta and isolation selection for electrons
             used in the di-electron veto.
             pt 15, eta 2.5, dB relIso 0.3
         '''
-        if (leg.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) > 0.3 or
+        if (leg.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) > 0.3 or
                 abs(leg.eta()) > 2.5 or
                 leg.pt() < 15 or
                 not self.testVetoElectronID(leg) or
@@ -230,7 +230,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             self.testVertex(muon) and \
             abs(muon.eta()) < 2.4 and \
             muon.pt() > 10. and \
-            muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) < 0.3
+            muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) < 0.3
 
     def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count veto muons
@@ -238,7 +238,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
                          muon.muonID('POG_ID_Medium_ICHEP') and
                          self.testVertex(muon) and
                          self.testLegKine(muon, ptcut=10, etacut=2.4) and
-                         muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) < 0.3]
+                         muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) < 0.3]
 
         if len(vOtherLeptons) > 0:
             return False
@@ -251,7 +251,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
                     self.testLegKine(electron, ptcut=10, etacut=2.5) and
                     self.testVertex(electron) and
                     self.testElectronID(electron) and
-                    electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3]
+                    electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < 0.3]
 
         if len(vLeptons) > 1:
             return False
@@ -282,7 +282,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        least_iso_highest_pt = lambda dl: (dl.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0), -dl.leg1().pt(), -dl.leg2().tauID("byIsolationMVArun2v1DBoldDMwLTraw"), -dl.leg2().pt())
+        least_iso_highest_pt = lambda dl: (dl.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False), -dl.leg1().pt(), -dl.leg2().tauID("byIsolationMVArun2v1DBoldDMwLTraw"), -dl.leg2().pt())
 
         return sorted(diLeptons, key=lambda dil : least_iso_highest_pt(dil))[0]
 

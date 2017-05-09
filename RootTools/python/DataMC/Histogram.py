@@ -1,6 +1,5 @@
 import copy
 
-
 class Histogram( object ):
     '''Histogram + a few things.
 
@@ -57,6 +56,10 @@ class Histogram( object ):
         hist = self.weighted
         if not weighted:
             hist = self.obj
+        
+        from ROOT import TH2F, TH2D
+        if isinstance(hist, TH2F) or isinstance(hist, TH2D):
+            return hist.Integral(0, hist.GetNbinsX()+1, 0, hist.GetNbinsY()+1)
         return hist.Integral( 0, hist.GetNbinsX()+1)
 
     def Rebin(self, factor):
@@ -141,9 +144,16 @@ class Histogram( object ):
         '''
         self.obj.Add( other.obj, coeff )
         self.weighted.Add( other.weighted, coeff )
-        integral = self.obj.Integral(0, self.obj.GetNbinsX())
-        if integral > 0.:
-            self.weight = self.weighted.Integral(0, self.weighted.GetNbinsX()+1)/integral
+
+        from ROOT import TH2F, TH2D
+        if isinstance(self.obj, TH2F) or isinstance(self.obj, TH2D):
+            integral = self.obj.Integral(0, self.obj.GetNbinsX()+1, 0, self.obj.GetNbinsY()+1)    
+            if integral > 0.:
+                self.weight = self.weighted.Integral(0, self.weighted.GetNbinsX()+1, 0, self.weighted.GetNbinsY()+1)/integral
+        else:
+            integral = self.obj.Integral(0, self.obj.GetNbinsX()+1)
+            if integral > 0.:
+                self.weight = self.weighted.Integral(0, self.weighted.GetNbinsX()+1)/integral
         return self
 
     def Integral(self, weighted=True, xmin=None, xmax=None ):

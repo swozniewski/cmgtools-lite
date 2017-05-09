@@ -186,7 +186,7 @@ class TauJetMuAnalyzer(DiLeptonAnalyzer):
                          self.testElectronID(electron) and
                          electron.passConversionVeto() and
                          electron.physObj.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1 and
-                         electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3]
+                         electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < 0.3]
 
         if len(vOtherLeptons) > 0:
             return False
@@ -230,7 +230,7 @@ class TauJetMuAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        least_iso_highest_pt = lambda dl: (dl.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0), -dl.leg1().pt(), -dl.leg2().pt())
+        least_iso_highest_pt = lambda dl: (dl.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False), -dl.leg1().pt(), -dl.leg2().pt())
 
         return sorted(diLeptons, key=lambda dil : least_iso_highest_pt(dil))[0]
 

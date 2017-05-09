@@ -179,7 +179,7 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
         '''Muon isolation to be implemented'''
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) < isocut
+        return muon.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) < isocut
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and electron'''
@@ -198,7 +198,7 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
         '''
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < isocut
+        return electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < isocut
 
     def otherLeptonVeto(self, leptons, otherLeptons, isocut=None):
         '''Second electron veto '''
@@ -208,7 +208,7 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
                          electron.passConversionVeto() and 
                          electron.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1 and
                          electron.mvaIDRun2('NonTrigSpring15MiniAOD', 'POG90') and
-                         electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3]
+                         electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < 0.3]
 
         if len(vOtherLeptons) > 1:
             return False
@@ -243,9 +243,9 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        minRelIso = min(d.leg2().relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+        minRelIso = min(d.leg2().relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) for d in diLeptons)
 
-        diLeps = [dil for dil in diLeptons if dil.leg2().relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) == minRelIso]
+        diLeps = [dil for dil in diLeptons if dil.leg2().relIsoR(R=0.4, dBetaFactor=0.5, allCharged=False) == minRelIso]
 
         if len(diLeps) == 1:
             return diLeps[0]
@@ -257,9 +257,9 @@ class MuEleAnalyzer(DiLeptonAnalyzer):
         if len(diLeps) == 1:
             return diLeps[0]
 
-        minIso = min(d.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) for d in diLeps)
+        minIso = min(d.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) for d in diLeps)
 
-        diLeps = [dil for dil in diLeps if dil.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) == minIso]
+        diLeps = [dil for dil in diLeps if dil.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) == minIso]
 
         if len(diLeps) == 1:
             return diLeps[0]

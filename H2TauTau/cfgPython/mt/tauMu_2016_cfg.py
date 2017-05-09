@@ -252,7 +252,7 @@ if not production:
     selectedComponents = [selectedComponents[-1]] if data else sync_list
     selectedComponents = [selectedComponents[-1]]
     for comp in selectedComponents:
-        comp.splitFactor = 100
+        comp.splitFactor = 5
         comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
