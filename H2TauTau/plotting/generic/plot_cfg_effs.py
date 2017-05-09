@@ -18,7 +18,8 @@ only_stack = False
 
 total_weight = '1'
 tree_prod_name = 'HLTTauTreeProducer'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSCollated'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
 int_lumi = 1.
 
 samples = [
@@ -28,7 +29,8 @@ samples = [
 
 g_cuts = {}
 # g_cuts['any_hlt_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3))'
-g_cuts['any_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3))'
+# g_cuts['any_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3))'
+g_cuts['inclusive'] = '(((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3)) || tau_gen_pt>15)'
 # g_cuts['offline_tau'] = '(tau_pt > 20)'
 
 
@@ -40,74 +42,75 @@ reco_tau_40 = 'tau_pt>40 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMo
 sb_cuts = {
     'gen_tau_45_reco_tau_40':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>45 && abs(tau_gen_eta)<2.3) && ' + reco_tau_40,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_reco_tau_20':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3) && ' + reco_tau_20,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm0_reco_tau_20':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==0) && ' + reco_tau_20,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm1_reco_tau_20':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==1) && ' + reco_tau_20,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm10_reco_tau_20':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==10) && ' + reco_tau_20,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm0_reco_tau_40':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==0) && ' + reco_tau_40,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm1_reco_tau_40':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==1) && ' + reco_tau_40,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm10_reco_tau_40':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==10) && ' + reco_tau_40,
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_45':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>45 && abs(tau_gen_eta)<2.3)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm0':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==0)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm1':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==1)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_dm10':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==10)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm0':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==0)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm1':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==1)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_40_dm10':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>40 && abs(tau_gen_eta)<2.3 && tau_gen_decayMode==10)',
-        'b':'&& ((abs(tau_gen_eta)<2.3) && (abs(tau_gen_pdgId)>20 || abs(tau_gen_pdgId)<6))'
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     }
 }
 
 
 vars = {
     # 'chargedPt':'abs({tau}_chargedPtSumIso)',
-    'chargedPtRel':'abs({tau}_chargedPtSumIso/{tau}_pt)',
+    'chargedPt04':'abs({tau}_chargedPtSumIso04)',
+    # 'chargedPtRel':'abs({tau}_chargedPtSumIso/{tau}_pt)',
     # 'rhoCorr':'abs({tau}_chargedPtSumIso) + max({tau}_gammaPtSumIso - rho*0.1752, 0)'
 }
 
@@ -127,7 +130,7 @@ for var_name, var in vars.items():
             for sample in samples:
                 tree.Add('/'.join([sample.ana_dir, sample.dir_name, sample.tree_prod_name, sample.tree_name + '.root']))
             
-            effs_b = [0.002, 0.005, 0.007, 0.009, 0.01, 0.012, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.0625, 0.075, 0.1, 0.15, 0.2]
+            effs_b = [0.001, 0.002, 0.005, 0.007, 0.009, 0.01, 0.012, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.0625, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
             effs = {}
 
@@ -190,4 +193,4 @@ for var_name, var in vars.items():
                     effs[dict_tau_name].append((best_eff_b, best_eff_s))
 
             import pickle
-            pickle.dump(effs, open('effs_{v}_{d}_{c}.pkl'.format(v=var_name, d=cut_name, c=signal_cut_name), 'wb'))
+            pickle.dump(effs, open('effsnopuno15_{v}_{d}_{c}.pkl'.format(v=var_name, d=cut_name, c=signal_cut_name), 'wb'))

@@ -2,7 +2,14 @@ import ROOT
 
 from CMGTools.H2TauTau.proto.plotter.ROCPlotter import makeROCPlot
 
-prefix = 'effs_any_tau'
+prefixes = [
+    # 'effs_any_tau',
+    # 'effs_chargedPtRel_any_tau',
+    # 'effs_rhoCorr_any_tau'
+    # 'effsnopu_chargedPt_any_tau'
+    # 'effsnopuno15_chargedPt_inclusive'
+    'effsnopuno15_chargedPt04_inclusive'
+]
 
 sb_names = [
     ('gen_tau_45_reco_tau_40', 'p_{T}^{gen} > 45 GeV (rec 40)'),
@@ -34,24 +41,25 @@ tau_name_to_plot = {
 }
 
 import pickle
-for sb_name in sb_names:
-    effs = pickle.load(open('{d}_{c}.pkl'.format(d=prefix, c=sb_name[0]), 'rb'))
+for prefix in prefixes:
+    for sb_name in sb_names:
+        effs = pickle.load(open('{d}_{c}.pkl'.format(d=prefix, c=sb_name[0]), 'rb'))
 
-    rocs = []
+        rocs = []
 
-    for name in tau_names:
-        effs_sb = effs[name]
-        if name in ['tau_dm', 'tau'] and 'reco_tau' in sb_name[0]:
-            continue
+        for name in tau_names:
+            effs_sb = effs[name]
+            if name in ['tau_dm', 'tau'] and 'reco_tau' in sb_name[0]:
+                continue
 
-        roc = ROOT.TGraph(len(effs_sb))
-        for i, eff_sb in enumerate(effs_sb):
-            roc.SetPoint(i, eff_sb[1], eff_sb[0])
+            roc = ROOT.TGraph(len(effs_sb))
+            for i, eff_sb in enumerate(effs_sb):
+                roc.SetPoint(i, eff_sb[1], eff_sb[0])
 
-        roc.name = name
-        roc.title = tau_name_to_plot[name]
-        rocs.append(roc)
+            roc.name = name
+            roc.title = tau_name_to_plot[name]
+            rocs.append(roc)
 
-    makeROCPlot(rocs, sb_name[0], outdir='rocs/', title=sb_name[1], xmin=0.4 if 'rec' in sb_name[0] else 0.2, ymin=0.004, logy=True)
+        makeROCPlot(rocs, sb_name[0]+prefix, outdir='rocs_nopu/', title=sb_name[1], xmin=0.4 if 'rec' in sb_name[0] else 0.2, ymin=0.004, logy=True)
 
 

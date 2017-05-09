@@ -28,6 +28,10 @@ class TauHLTAnalyzer(Analyzer):
             'std::vector<reco::PFTau>'
         )
 
+        self.handles['jets'] = AutoHandle(
+            ('ak4PFJetsCHS', '', 'RECO'),
+            'vector<reco::PFJet')
+
         self.handles['DM'] = AutoHandle(
             ('hpsPFTauDiscriminationByDecayModeFindingNewDMs', '', 'RECO'),
             'reco::PFTauDiscriminator'
@@ -89,6 +93,27 @@ class TauHLTAnalyzer(Analyzer):
             mayFail=True,
             disableAtFirstFail=False
         )
+
+
+        ### DEBUG
+        self.handles['hltCombinatoricRecoTausSingleTau'] = AutoHandle(
+            ('hltCombinatoricRecoTausSingleTau', '', 'TEST'),
+            'std::vector<reco::PFTau>',
+            lazy=False,
+            mayFail=True,
+            disableAtFirstFail=False
+        )
+
+        self.handles['hltPixelTracks'] = AutoHandle(
+            ('hltPixelTracks', '', 'TEST'),
+            'vector<reco::Track>',
+            lazy=False,
+            mayFail=True,
+            disableAtFirstFail=False
+        )
+
+
+        ### END DEBUG
 
         self.handles['hltSingleDM'] = AutoHandle(
             ('hltHpsPFTauDiscriminationByDecayModeFindingNewDMsSingleTau', '', 'TEST'),
@@ -189,6 +214,14 @@ class TauHLTAnalyzer(Analyzer):
                 tau.dm = -10 # dummy so it behaves as the other taus
                 tau.loose_db_iso = -10. # dummy so it behaves as the other taus
 
+        event.hlt_combo_taus = []
+        if self.handles['hltCombinatoricRecoTausSingleTau'].isValid():
+            event.hlt_combo_taus = [Tau(tau) for tau in self.handles['hltCombinatoricRecoTausSingleTau'].product()]
+
+        event.hltPixelTracks = []
+        if self.handles['hltPixelTracks'].isValid():
+            event.hltPixelTracks = [track for track in self.handles['hltPixelTracks'].product()]
+
         event.hlt_single_taus = []
         if self.handles['hltSingle_taus'].isValid():
             event.hlt_single_taus = [Tau(tau) for tau in self.handles['hltSingle_taus'].product()]
@@ -205,18 +238,22 @@ class TauHLTAnalyzer(Analyzer):
                 print 'No single HLT taus'
                 # import pdb; pdb.set_trace()
 
-        event.taus = [tau for tau in event.taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
-        event.hlt_taus = [tau for tau in event.hlt_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
-        event.hlt_classic_taus = [tau for tau in event.hlt_classic_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
-        event.hlt_classic_single_taus = [tau for tau in event.hlt_classic_single_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
-        event.hlt_single_taus = [tau for tau in event.hlt_single_taus if tau.pt() > 10. and abs(tau.eta()) < 2.3]
+        event.taus = [tau for tau in event.taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
+        event.hlt_taus = [tau for tau in event.hlt_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
+        event.hlt_classic_taus = [tau for tau in event.hlt_classic_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
+        event.hlt_classic_single_taus = [tau for tau in event.hlt_classic_single_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
 
+        event.all_hlt_single_taus = event.hlt_single_taus
+        event.hlt_single_taus = [tau for tau in event.hlt_single_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
+
+
+        event.jets = [jet for jet in self.handles['jets'].product() if jet.pt()>15. and abs(jet.eta())<2.3]
 
         event.genParticles = self.handles['genParticles'].product()
 
         event.genleps = [p for p in event.genParticles if abs(p.pdgId()) in [11, 13] and p.statusFlags().isPrompt()]
         event.gentauleps = [p for p in event.genParticles if abs(p.pdgId()) in [11, 13] and p.statusFlags().isDirectPromptTauDecayProduct()]
-        event.gentaus = [p for p in event.genParticles if abs(p.pdgId()) == 15 and p.statusFlags().isPrompt() and not any(abs(HTTGenAnalyzer.getFinalTau(p).daughter(i_d).pdgId()) in [11, 13] for i_d in xrange(HTTGenAnalyzer.getFinalTau(p).numberOfDaughters()))]
+        event.gentaus = [p for p in event.genParticles if abs(p.pdgId()) == 15 and p.statusFlags().isPrompt() and not any(abs(HTTGenAnalyzer.getFinalTau(p).daughter(i_d).pdgId()) in [11, 13] for i_d in xrange(HTTGenAnalyzer.getFinalTau(p).numberOfDaughters())) and not(HTTGenAnalyzer.getFinalTau(p)!=p and  HTTGenAnalyzer.getFinalTau(p).statusFlags().isPrompt())]
 
         def addInfo(tau, cands=None, maxDeltaR=None):
             HTTGenAnalyzer.genMatch(event, tau, event.gentauleps, event.genleps, [], 
@@ -228,6 +265,10 @@ class TauHLTAnalyzer(Analyzer):
         pfCandidates = self.handles['pfCandidates'].product()
         hltPfCandidates = self.handles['hltPfCandidates'].product() if self.handles['hltPfCandidates'].isValid() else None
         hltSinglePfCandidates = self.handles['hltSinglePfCandidates'].product() if self.handles['hltSinglePfCandidates'].isValid() else None
+
+        # For debugging:
+        event.pfCandidates = pfCandidates
+        event.hltSinglePfCandidates = hltSinglePfCandidates
 
         for tau in event.taus:
             addInfo(tau, [c for c in pfCandidates if abs(c.pdgId()) == 211], maxDeltaR=0.8)
@@ -343,7 +384,7 @@ class TauHLTAnalyzer(Analyzer):
 
 
             if not cand.trackRef().isAvailable():
-                print 'Track not avaialble for PF candidate with ID', cand.pdgId()
+                print 'Track not available for PF candidate with ID', cand.pdgId()
                 continue
             track = cand.trackRef().get()
 
@@ -399,8 +440,12 @@ class TauHLTAnalyzer(Analyzer):
         variables = {
             'ptSumIso': tau.isolationPFCands(),
             'chargedPtSumIso': TauHLTAnalyzer.tauChargedFilteredIso(tau),
+            'chargedPtSumIso04': TauHLTAnalyzer.tauChargedFilteredIso(tau, maxDeltaR=0.4),
+            'chargedPtSumIso03': TauHLTAnalyzer.tauChargedFilteredIso(tau, maxDeltaR=0.3),
             'chargedPUPtSumIso': TauHLTAnalyzer.tauChargedFilteredIso(tau, minDeltaZ=0.2, maxDeltaZ=99999., cands=pfCandidates, maxDeltaR=maxDeltaR),
             'gammaPtSumIso': TauHLTAnalyzer.tauFilteredPhotons(tau),
+            'gammaPtSumIso04': TauHLTAnalyzer.tauFilteredPhotons(tau, maxDR=0.4),
+            'gammaPtSumIso04Pt1': TauHLTAnalyzer.tauFilteredPhotons(tau, minPt=1.0, maxDR=0.4),
             'gammaPtSumOutsideSignalCone': TauHLTAnalyzer.tauPhotonsOutsideSignalCone(tau),
             'neutralPtSumIso': tau.isolationPFNeutrHadrCands(),
             'ptSumSignal': tau.signalPFCands(),
