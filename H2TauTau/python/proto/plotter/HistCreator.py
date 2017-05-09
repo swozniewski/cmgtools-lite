@@ -11,7 +11,7 @@ from CMGTools.H2TauTau.proto.plotter.DataMCPlot import DataMCPlot
 
 from CMGTools.RootTools.DataMC.Histogram import Histogram
 
-from ROOT import TH1F, TFile, TTree, TTreeFormula
+from ROOT import TH1F, TH2F, TFile, TTree, TTreeFormula
 
 
 def initHist(hist, vcfg):
@@ -95,7 +95,13 @@ def createHistograms(hist_cfg, all_stack=False, verbose=False, friend_func=None,
                 # plot = plots[vcfg.name]
 
                 hname = '_'.join([hist_cfg.name, hashlib.md5(hist_cfg.cut).hexdigest(), cfg.name, vcfg.name, cfg.dir_name])
-                if 'xmin' in vcfg.binning:
+                if ':' in vcfg.name:
+                    print 'WARNING, 2D hist, experimental support'
+                    hist = TH2F(hname, '', vcfg.binning['nbinsx'],
+                                vcfg.binning['xmin'], vcfg.binning['xmax'], 
+                                vcfg.binning['nbinsy'], vcfg.binning['ymin'], 
+                                vcfg.binning['ymax'])
+                elif 'xmin' in vcfg.binning:
                     hist = TH1F(hname, '', vcfg.binning['nbinsx'],
                                 vcfg.binning['xmin'], vcfg.binning['xmax'])
                 else:
@@ -167,7 +173,13 @@ def createHistogram(hist_cfg, all_stack=False, verbose=False, friend_func=None):
         else:
             # It's a sample cfg
             hname = '_'.join([hist_cfg.name, hashlib.md5(hist_cfg.cut).hexdigest(), cfg.name, vcfg.name, cfg.dir_name])
-            if 'xmin' in vcfg.binning:
+            if ':' in vcfg.drawname:
+                    print 'WARNING, 2D hist, experimental support'
+                    hist = TH2F(hname, '', vcfg.binning['nbinsx'],
+                                vcfg.binning['xmin'], vcfg.binning['xmax'], 
+                                vcfg.binning['nbinsy'], vcfg.binning['ymin'], 
+                                vcfg.binning['ymax'])
+            elif 'xmin' in vcfg.binning:
                 hist = TH1F(hname, '', vcfg.binning['nbinsx'],
                             vcfg.binning['xmin'], vcfg.binning['xmax'])
             else:
