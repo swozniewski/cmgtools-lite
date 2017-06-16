@@ -7,8 +7,8 @@ prefixes = [
     # 'effs_chargedPtRel_any_tau',
     # 'effs_rhoCorr_any_tau'
     # 'effsnopu_chargedPt_any_tau'
-    # 'effsnopuno15_chargedPt_inclusive'
-    'effsnopuno15_chargedPt04_inclusive'
+    'effs_chargedPt_inclusive'
+    # 'effsnopuno15_chargedPt04_inclusive'
 ]
 
 sb_names = [
@@ -28,15 +28,19 @@ sb_names = [
     ('gen_tau_40_dm0', 'p_{T}^{gen} > 40 GeV 1p'),
     ('gen_tau_40_dm1', 'p_{T}^{gen} > 40 GeV 1p+pi0'),
     ('gen_tau_40_dm10', 'p_{T}^{gen} > 40 GeV 3p'),
+    ('gen_tau_35', 'p_{T}^{gen} > 35 GeV'),
+    ('gen_tau_35_reco_tau_35', 'p_{T}^{gen} > 35 GeV (rec 35)'),
 ]
 
-tau_names = ['hlt_single_tau_dm', 'hlt_single_tau', 'hlt_classic_single_tau', 'tau_dm', 'tau']
+tau_names = ['hlt_single_tau_dm', 'hlt_single_tau',  'hlt_classic_single_tau', 'tau_dm', 'tau', 'hlt_single_tau_neutral', 'hlt_single_tau_outside']
 
 tau_name_to_plot = {
     'tau_dm':'Offline HPS (DM)',
     'tau':'Offline HPS',
     'hlt_single_tau_dm':'HLT HPS (DM)',
     'hlt_single_tau':'HLT HPS',
+    'hlt_single_tau_neutral':'HLT HPS plus neutral',
+    'hlt_single_tau_outside':'HLT HPS outside',
     'hlt_classic_single_tau':'HLT Shrinking'
 }
 

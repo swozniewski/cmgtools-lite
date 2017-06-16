@@ -18,18 +18,20 @@ only_stack = False
 
 total_weight = '1'
 tree_prod_name = 'HLTTauTreeProducer'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/trigger/CMSSW_9_1_0_pre3/src/CMGTools/H2TauTau/cfgPython/generic/HPSatHLT_relax'
 int_lumi = 1.
 
 samples = [
     SampleCfg(name='ggH135', dir_name='ggH135_rawaod', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_1', dir_name='ggH135_rawaod_1', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
     SampleCfg(name='ggH135_2', dir_name='ggH135_rawaod_2', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_3', dir_name='ggH135_rawaod_3', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
 ]
 
 cuts = {}
 # cuts['any_hlt_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3))'
-cuts['any_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3))'
-# cuts['offline_tau'] = '(tau_pt > 20)'
+cuts['any_tau'] = '((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3) || tau_gen_pt>15)'
+cuts['offline_tau'] = '(tau_pt > 20)'
 
 
 # for tau_name in ['tau', 'hlt_tau', 'hlt_single_tau']:
@@ -37,21 +39,24 @@ tau_name = 'TAU'
 variables = [
     # VariableCfg(name='jet_pt', binning=array([20., 30., 40., 50., 60., 80., 100., 120., 140., 160., 180., 200., 250., 300., 350.]), unit='GeV', xtitle='jet p_{T}'),
     # VariableCfg(name='rho', binning={'nbinsx':80, 'xmin':0, 'xmax':80}, unit='GeV', xtitle='#rho'),
-    VariableCfg(name=tau_name+'_pt', binning={'nbinsx':30, 'xmin':0., 'xmax':150.}, unit='GeV', xtitle='p_{T}'),
-    VariableCfg(name=tau_name+'_eta', binning={'nbinsx':48, 'xmin':-2.4, 'xmax':2.4}, unit=None, xtitle='#eta'),
+    # VariableCfg(name=tau_name+'_pt', binning={'nbinsx':30, 'xmin':0., 'xmax':150.}, unit='GeV', xtitle='p_{T}'),
+    # VariableCfg(name=tau_name+'_eta', binning={'nbinsx':48, 'xmin':-2.4, 'xmax':2.4}, unit=None, xtitle='#eta'),
     # # VariableCfg(name=tau_name+'_decayMode', binning={'nbinsx':15, 'xmin':-0., 'xmax':14.5}, unit=None, xtitle='decay mode'),
     # VariableCfg(name=tau_name+'_dm', binning={'nbinsx':2, 'xmin':-0.5, 'xmax':1.5}, unit=None, xtitle='decay mode finding'),
-    VariableCfg(name=tau_name+'_chargedPtSumIso', drawname='abs('+tau_name+'_chargedPtSumIso)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum'),
-    VariableCfg(name=tau_name+'_chargedPtSumIso04', drawname='abs('+tau_name+'_chargedPtSumIso04)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum (cone 0.4)'),
-    VariableCfg(name=tau_name+'_chargedPtSumIso03', drawname='abs('+tau_name+'_chargedPtSumIso03)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum (cone 0.3)'),
-    VariableCfg(name=tau_name+'_gammaPtSumIso', drawname='abs('+tau_name+'_gammaPtSumIso)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum'),
-    VariableCfg(name=tau_name+'_gammaPtSumIso04', drawname='abs('+tau_name+'_gammaPtSumIso04)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum (cone 0.4)'),
-    VariableCfg(name=tau_name+'_gammaPtSumIso04Pt1', drawname='abs('+tau_name+'_gammaPtSumIso04Pt1)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum (cone 0.4, p+{T} > 1 GeV)'),
-    # # VariableCfg(name=tau_name+'_neutralPtSumIso', binning={'nbinsx':40, 'xmin':0., 'xmax':50.}, unit=None, xtitle='iso neutral pT sum'),
-    VariableCfg(name=tau_name+'_gammaPtSumIso_rhocorr', drawname='abs('+tau_name+'_gammaPtSumIso) - rho*0.1752', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr iso photon pT sum'),
-    VariableCfg(name=tau_name+'_combIso_rhocorr', drawname='abs('+tau_name+'_chargedPtSumIso) + max('+tau_name+'_gammaPtSumIso - rho*0.1752, 0)', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr combined isolation'),
-    VariableCfg(name=tau_name+'_combIso_dbetacorr', drawname='abs('+tau_name+'_chargedPtSumIso) + max('+tau_name+'_gammaPtSumIso - '+tau_name+'_chargedPUPtSumIso*0.2, 0)', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr combined isolation'),
-    VariableCfg(name=tau_name+'_gammaPtSumOutsideSignalCone', binning={'nbinsx':40, 'xmin':0., 'xmax':40.}, unit=None, xtitle='photon pT sum outside signal cone'),
+    # VariableCfg(name=tau_name+'_chargedPtSumIso', drawname='abs('+tau_name+'_chargedPtSumIso)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum'),
+    # VariableCfg(name=tau_name+'_chargedPtSumIsoOutsideSignalCone', drawname='abs('+tau_name+'_chargedPtSumIsoOutsideSignalCone)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum outside signal cone'),
+    VariableCfg(name=tau_name+'_chargedPtSumIso', drawname='abs('+tau_name+'_chargedPtSumIso)', binning={'nbinsx':100, 'xmin':0., 'xmax':10.}, unit='GeV', xtitle='iso charged pT sum'),
+    VariableCfg(name=tau_name+'_chargedPtSumIsoOutsideSignalCone', drawname='abs('+tau_name+'_chargedPtSumIsoOutsideSignalCone)', binning={'nbinsx':100, 'xmin':0., 'xmax':10.}, unit='GeV', xtitle='iso charged pT sum outside signal cone'),
+    # VariableCfg(name=tau_name+'_chargedPtSumIso04', drawname='abs('+tau_name+'_chargedPtSumIso04)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum (cone 0.4)'),
+    # VariableCfg(name=tau_name+'_chargedPtSumIso03', drawname='abs('+tau_name+'_chargedPtSumIso03)', binning={'nbinsx':10000, 'xmin':0., 'xmax':1000.}, unit='GeV', xtitle='iso charged pT sum (cone 0.3)'),
+    # VariableCfg(name=tau_name+'_gammaPtSumIso', drawname='abs('+tau_name+'_gammaPtSumIso)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum'),
+    # VariableCfg(name=tau_name+'_gammaPtSumIso04', drawname='abs('+tau_name+'_gammaPtSumIso04)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum (cone 0.4)'),
+    # VariableCfg(name=tau_name+'_gammaPtSumIso04Pt1', drawname='abs('+tau_name+'_gammaPtSumIso04Pt1)', binning={'nbinsx':40, 'xmin':0., 'xmax':70.}, unit=None, xtitle='iso photon pT sum (cone 0.4, p+{T} > 1 GeV)'),
+    # # # VariableCfg(name=tau_name+'_neutralPtSumIso', binning={'nbinsx':40, 'xmin':0., 'xmax':50.}, unit=None, xtitle='iso neutral pT sum'),
+    # VariableCfg(name=tau_name+'_gammaPtSumIso_rhocorr', drawname='abs('+tau_name+'_gammaPtSumIso) - rho*0.1752', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr iso photon pT sum'),
+    # VariableCfg(name=tau_name+'_combIso_rhocorr', drawname='abs('+tau_name+'_chargedPtSumIso) + max('+tau_name+'_gammaPtSumIso - rho*0.1752, 0)', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr combined isolation'),
+    # VariableCfg(name=tau_name+'_combIso_dbetacorr', drawname='abs('+tau_name+'_chargedPtSumIso) + max('+tau_name+'_gammaPtSumIso - '+tau_name+'_chargedPUPtSumIso*0.2, 0)', binning={'nbinsx':40, 'xmin':-10., 'xmax':60.}, unit=None, xtitle='rho-corr combined isolation'),
+    # VariableCfg(name=tau_name+'_gammaPtSumOutsideSignalCone', binning={'nbinsx':40, 'xmin':0., 'xmax':40.}, unit=None, xtitle='photon pT sum outside signal cone'),
     # VariableCfg(name=tau_name+'_dm_plus_pt30', drawname=tau_name+'_dm == 1 && '+tau_name+'_pt>30', binning={'nbinsx':2, 'xmin':-0.5, 'xmax':1.5}, unit=None, xtitle='decay mode finding'),
     # VariableCfg(name=tau_name+'_dm_plus_pt40', drawname=tau_name+'_dm == 1 && '+tau_name+'_pt>40', binning={'nbinsx':2, 'xmin':-0.5, 'xmax':1.5}, unit=None, xtitle='decay mode finding'),
 ]
@@ -146,7 +151,7 @@ for cut_name, cut in cuts.items():
                 #     cfg_s.var.drawname += ' + 9999.*({tau}_dm<0.5)'.format(tau=tau_name)
                 #     cfg_b.var.drawname += ' + 9999.*({tau}_dm<0.5)'.format(tau=tau_name)
 
-                apply_dm = True
+                apply_dm = False
 
                 if apply_dm:
                     if tau_name in ['tau', 'hlt_tau', 'hlt_single_tau'] and not 'dm_' in cfg_s.var.name:

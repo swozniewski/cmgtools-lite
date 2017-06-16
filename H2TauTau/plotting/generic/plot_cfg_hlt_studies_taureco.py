@@ -15,12 +15,14 @@ only_stack = False
 
 total_weight = '1'
 tree_prod_name = 'HLTTauTreeProducer'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/trigger/CMSSW_9_1_0_pre3/src/CMGTools/H2TauTau/cfgPython/generic/HPSatHLT_relax1p2p'
 int_lumi = 1.
 
 samples = [
     SampleCfg(name='ggH135', dir_name='ggH135_rawaod', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_1', dir_name='ggH135_rawaod_1', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
     SampleCfg(name='ggH135_2', dir_name='ggH135_rawaod_2', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_3', dir_name='ggH135_rawaod_3', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
 ]
 
 any_tau = ' && ((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic_tau_pt > 20 || hlt_classic_single_tau_pt > 20 || tau_pt > 20) && (abs(hlt_single_tau_eta)<2.3 || abs(hlt_tau_eta) < 2.3 || abs(hlt_classic_tau_eta) <2.3 || abs(hlt_classic_single_tau_eta) < 2.3 || abs(tau_eta) < 2.3))'

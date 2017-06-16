@@ -9,8 +9,9 @@ class HLTTauTreeProducer(H2TauTauTreeProducerBase):
     '''
     triggers = ['MC_LooseIsoPFTau20_v1',  'MC_LooseIsoPFTau50_Trk30_eta2p1_v1', 'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v3', 'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v5']
 
-    def __init__(self, *args):
-        super(HLTTauTreeProducer, self).__init__(*args)
+    def __init__(self, cfg_ana, cfg_comp, looperName):
+        super(HLTTauTreeProducer, self).__init__(cfg_ana, cfg_comp, looperName)
+        self.debug =  getattr(cfg_ana, 'debug', False)
 
     def declareHandles(self):
         super(HLTTauTreeProducer, self).declareHandles()
@@ -38,7 +39,7 @@ class HLTTauTreeProducer(H2TauTauTreeProducerBase):
     def bookTau(self, tau_name):
         self.bookParticle(self.tree, tau_name)
 
-        for var in ['ptSumIso', 'chargedPtSumIso', 'chargedPUPtSumIso', 'gammaPtSumIso', 'neutralPtSumIso', 'ptSumSignal', 'chargedCandsPtSumSignal', 'gammaCandsPtSumSignal', 'neutralCandsPtSumSignal', 'dm', 'loose_db_iso', 'nphotons', 'decayMode', 'leadChargedHadrPt', 'leadChargedHadrId',
+        for var in ['ptSumIso', 'chargedPtSumIso', 'chargedPtSumIsoOutsideSignalCone', 'chargedPUPtSumIso', 'gammaPtSumIso', 'neutralPtSumIso', 'ptSumSignal', 'chargedCandsPtSumSignal', 'gammaCandsPtSumSignal', 'neutralCandsPtSumSignal', 'dm', 'loose_db_iso', 'nphotons', 'decayMode', 'leadChargedHadrPt', 'leadChargedHadrId',
             'gammaPtSumOutsideSignalCone', 'gammaPtSumIso04Pt1', 'gammaPtSumIso04', 'chargedPtSumIso04', 'chargedPtSumIso03']:
             self.var(self.tree, '_'.join([tau_name, var]))
 
@@ -69,7 +70,7 @@ class HLTTauTreeProducer(H2TauTauTreeProducerBase):
             if abs(tau.genp.pdgId()) == 15:
                 self.fill(self.tree, 'tau_gen_decayMode', tauDecayModes.genDecayModeInt(tau.genp.daughters))
 
-        for var in ['ptSumIso', 'chargedPtSumIso', 'chargedPUPtSumIso', 'gammaPtSumIso', 'neutralPtSumIso', 'ptSumSignal', 'chargedCandsPtSumSignal', 'gammaCandsPtSumSignal', 'neutralCandsPtSumSignal', 'dm', 'loose_db_iso', 'nphotons', 'gammaPtSumOutsideSignalCone', 'gammaPtSumIso04Pt1', 'gammaPtSumIso04', 'chargedPtSumIso04', 'chargedPtSumIso03']:
+        for var in ['ptSumIso', 'chargedPtSumIso', 'chargedPtSumIsoOutsideSignalCone', 'chargedPUPtSumIso', 'gammaPtSumIso', 'neutralPtSumIso', 'ptSumSignal', 'chargedCandsPtSumSignal', 'gammaCandsPtSumSignal', 'neutralCandsPtSumSignal', 'dm', 'loose_db_iso', 'nphotons', 'gammaPtSumOutsideSignalCone', 'gammaPtSumIso04Pt1', 'gammaPtSumIso04', 'chargedPtSumIso04', 'chargedPtSumIso03']:
             try:
                 self.fill(self.tree, '_'.join([tau_name, var]), getattr(tau, var))
             except TypeError:
@@ -113,6 +114,53 @@ class HLTTauTreeProducer(H2TauTauTreeProducerBase):
         gen_taus = [tau for tau in event.genTauJets if tau.pt() > 20. and abs(tau.eta()) < 2.3]
 
         i_tau = 0
+
+        if self.debug:
+            for hlt_tau in event.hlt_single_taus:
+                for hlt_classic_single_tau in hlt_classic_single_taus:
+                    if deltaR(hlt_classic_single_tau, hlt_tau) < 0.3:
+                        if hlt_tau.genp and abs(hlt_tau.genp.pdgId()) == 15 and hlt_tau.genp.pt() > 30. and hlt_classic_single_tau.pt()/hlt_tau.genp.pt() > 0.8 and hlt_tau.pt()/hlt_tau.genp.pt() < 0.8:
+                            found_offline = False
+                            for tau in event.taus:
+                                if deltaR(tau, hlt_tau) < 0.3 and tau.pt()/hlt_tau.genp.pt() > 0.8 and tau.decayMode() in [0, 1, 10, 11] and tau.loose_db_iso > 0.5:
+                                    found_offline = True
+                                    break
+                            if not found_offline:
+                                continue
+
+                            if hlt_classic_single_tau.neutralCandsPtSumSignal/hlt_classic_single_tau.pt() > 0.4:
+                                print '  FOUND BUT CAUSE TOO MUCH NEUTRAL ENERGY, break'
+                                continue
+
+                            print '\n##### FOUND\nGen pT, DM', hlt_tau.genp.pt(), tauDecayModes.genDecayModeInt(hlt_tau.genp.daughters)
+                            print 'run, lumi, event', event.input.eventAuxiliary().id().run(), event.input.eventAuxiliary().id().luminosityBlock(), event.input.eventAuxiliary().id().event()
+
+                            print '  ### HLT\n', hlt_tau
+                            print 'charged/gamma/neutral', '{:.2f}/{:.2f}/{:.2f}'.format(hlt_tau.chargedCandsPtSumSignal/hlt_tau.pt(), hlt_tau.gammaCandsPtSumSignal/hlt_tau.pt(), hlt_tau.neutralCandsPtSumSignal/hlt_tau.pt())
+                            print ' CH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in hlt_tau.signalPFChargedHadrCands()]
+                            print ' PH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in hlt_tau.signalPFGammaCands()]
+                            print ' ### CONE\n', hlt_classic_single_tau
+                            print 'charged/gamma/neutral', '{:.2f}/{:.2f}/{:.2f}'.format(hlt_classic_single_tau.chargedCandsPtSumSignal/hlt_classic_single_tau.pt(), hlt_classic_single_tau.gammaCandsPtSumSignal/hlt_classic_single_tau.pt(), hlt_classic_single_tau.neutralCandsPtSumSignal/hlt_classic_single_tau.pt())
+
+                            print ' CH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in hlt_classic_single_tau.signalPFChargedHadrCands()]
+                            print ' PH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in hlt_classic_single_tau.signalPFGammaCands()]
+
+                            print '  ### OFF\n', tau
+                            print 'charged/gamma/neutral', '{:.2f}/{:.2f}/{:.2f}'.format(tau.chargedCandsPtSumSignal/tau.pt(), tau.gammaCandsPtSumSignal/tau.pt(), tau.neutralCandsPtSumSignal/tau.pt())
+                            print ' CH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in tau.signalPFChargedHadrCands()]
+                            print ' PH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in tau.signalPFGammaCands()]
+                            
+                            combo_taus = [c for c in event.hlt_combo_taus if deltaR(c, hlt_tau) < 0.3]
+                            good_c_taus = []
+                            for c_tau in combo_taus:
+                                if c_tau.pt()/hlt_tau.genp.pt() > 0.8:
+                                    print '### Found a combo tau with decent pT'
+                                    print c_tau
+                                    print 'charged/gamma/neutral', '{:.2f}/{:.2f}/{:.2f}'.format(sum(c.pt() for c in c_tau.signalPFChargedHadrCands())/c_tau.pt(), sum(c.pt() for c in c_tau.signalPFGammaCands())/c_tau.pt(), sum(c.pt() for c in c_tau.signalPFNeutrHadrCands())/c_tau.pt())
+                                    good_c_taus.append(c_tau)
+                                    print ' CH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in c_tau.signalPFChargedHadrCands()]
+                                    print ' PH:', ['{:.1f} {:.1f} {:.1f}'.format(c.pt(), c.eta(), c.phi()) for c in c_tau.signalPFGammaCands()]
+                            import pdb; pdb.set_trace()
 
         for tau in event.taus:
             self.tree.reset()

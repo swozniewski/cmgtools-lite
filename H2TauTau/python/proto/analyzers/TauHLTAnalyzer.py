@@ -47,7 +47,7 @@ class TauHLTAnalyzer(Analyzer):
             'std::vector<reco::GenParticle>')
 
         self.handles['hlt_taus'] = AutoHandle(
-            ('hltHpsPFTauProducer', '', 'TEST'),
+            ('hltHpsPFTauProducer', '', 'MYHLT'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -55,7 +55,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hlt_classic_taus'] = AutoHandle(
-            ('hltPFTausReg', '', 'TEST'),
+            ('hltPFTausReg', '', 'MYHLT'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -63,7 +63,7 @@ class TauHLTAnalyzer(Analyzer):
         )
         
         self.handles['hlt_classic_single_taus'] = AutoHandle(
-            ('hltPFTaus', '', 'TEST'),
+            ('hltPFTaus', '', 'MYHLT'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -71,7 +71,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltDM'] = AutoHandle(
-            ('hltHpsPFTauDiscriminationByDecayModeFindingNewDMs', '', 'TEST'),
+            ('hltHpsPFTauDiscriminationByDecayModeFindingNewDMs', '', 'MYHLT'),
             'reco::PFTauDiscriminator',
             lazy=False,
             mayFail=True,
@@ -79,7 +79,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltLooseDB'] = AutoHandle(
-            ('hltHpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits', '', 'TEST'),
+            ('hltHpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits', '', 'MYHLT'),
             'reco::PFTauDiscriminator',
             lazy=False,
             mayFail=True,
@@ -87,7 +87,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltSingle_taus'] = AutoHandle(
-            ('hltHpsPFTauProducerSingleTau', '', 'TEST'),
+            ('hltHpsPFTauProducerSingleTau', '', 'MYHLT'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -97,7 +97,7 @@ class TauHLTAnalyzer(Analyzer):
 
         ### DEBUG
         self.handles['hltCombinatoricRecoTausSingleTau'] = AutoHandle(
-            ('hltCombinatoricRecoTausSingleTau', '', 'TEST'),
+            ('hltCombinatoricRecoTausSingleTau', '', 'MYHLT'),
             'std::vector<reco::PFTau>',
             lazy=False,
             mayFail=True,
@@ -105,7 +105,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltPixelTracks'] = AutoHandle(
-            ('hltPixelTracks', '', 'TEST'),
+            ('hltPixelTracks', '', 'MYHLT'),
             'vector<reco::Track>',
             lazy=False,
             mayFail=True,
@@ -116,7 +116,7 @@ class TauHLTAnalyzer(Analyzer):
         ### END DEBUG
 
         self.handles['hltSingleDM'] = AutoHandle(
-            ('hltHpsPFTauDiscriminationByDecayModeFindingNewDMsSingleTau', '', 'TEST'),
+            ('hltHpsPFTauDiscriminationByDecayModeFindingNewDMsSingleTau', '', 'MYHLT'),
             'reco::PFTauDiscriminator',
             lazy=False,
             mayFail=True,
@@ -124,7 +124,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltSingleLooseDB'] = AutoHandle(
-            ('hltHpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3HitsSingleTau', '', 'TEST'),
+            ('hltHpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3HitsSingleTau', '', 'MYHLT'),
             'reco::PFTauDiscriminator',
             lazy=False,
             mayFail=True,
@@ -137,7 +137,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltPfCandidates'] = AutoHandle(
-            ('hltParticleFlowReg', '', 'TEST'),
+            ('hltParticleFlowReg', '', 'MYHLT'),
             'std::vector<reco::PFCandidate>',
             lazy=False,
             mayFail=True,
@@ -145,7 +145,7 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['hltSinglePfCandidates'] = AutoHandle(
-            ('hltParticleFlowForTaus', '', 'TEST'),
+            ('hltParticleFlowForTaus', '', 'MYHLT'),
             'std::vector<reco::PFCandidate>',
             lazy=False,
             mayFail=True,
@@ -153,13 +153,13 @@ class TauHLTAnalyzer(Analyzer):
         )
 
         self.handles['TriggerResults'] = AutoHandle(
-            ('TriggerResults', '', 'TEST'), 'edm::TriggerResults')
+            ('TriggerResults', '', 'MYHLT'), 'edm::TriggerResults')
 
         # self.handles['TriggerResults'] = AutoHandle(
             # ('TriggerResults', '', 'HLT'), 'edm::TriggerResults')
 
         self.handles['triggerObjects'] = AutoHandle(
-            ('selectedPatTriggerCustom', '', 'TEST'),
+            ('selectedPatTriggerCustom', '', 'MYHLT'),
             'std::vector<pat::TriggerObjectStandAlone>'
             )
 
@@ -240,8 +240,8 @@ class TauHLTAnalyzer(Analyzer):
 
         event.taus = [tau for tau in event.taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
         event.hlt_taus = [tau for tau in event.hlt_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
-        event.hlt_classic_taus = [tau for tau in event.hlt_classic_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
-        event.hlt_classic_single_taus = [tau for tau in event.hlt_classic_single_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
+        event.hlt_classic_taus = [tau for tau in event.hlt_classic_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3 and tau.leadPFChargedHadrCand().get() and tau.leadPFChargedHadrCand().pt() > 0.]
+        event.hlt_classic_single_taus = [tau for tau in event.hlt_classic_single_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3 and tau.leadPFChargedHadrCand().get() and tau.leadPFChargedHadrCand().pt() > 0.]
 
         event.all_hlt_single_taus = event.hlt_single_taus
         event.hlt_single_taus = [tau for tau in event.hlt_single_taus if tau.pt() > 15. and abs(tau.eta()) < 2.3]
@@ -366,7 +366,7 @@ class TauHLTAnalyzer(Analyzer):
 
 
     @staticmethod
-    def tauChargedFilteredIso(tau, minDeltaZ=-1., maxDeltaZ=0.2, maxTrackChi2=100., maxTransverseImpactParameter=0.03, minTrackHits=3, minTrackPt=0.5, cands=None, maxDeltaR=None):
+    def tauChargedFilteredIso(tau, minDeltaZ=-1., maxDeltaZ=0.2, maxTrackChi2=100., maxTransverseImpactParameter=0.03, minTrackHits=3, minTrackPt=0.5, cands=None, maxDeltaR=None, onlyOutsideSignalCone=False):
         
         if not cands:
             cands = [cand.get() for cand in tau.isolationPFChargedHadrCands()]
@@ -375,9 +375,13 @@ class TauHLTAnalyzer(Analyzer):
         for cand in cands:
             if maxDeltaR:
                 # Speed up
-                if abs(cand.eta() - tau.eta()) > maxDeltaR or abs(cand.phi() - tau.phi()) > maxDeltaR:
+                if abs(cand.eta() - tau.eta()) > maxDeltaR:
                     continue
                 if deltaR(tau, cand) > maxDeltaR:
+                    continue
+
+            if onlyOutsideSignalCone:
+                if deltaR(tau, cand) < tau.signalConeSize():
                     continue
 
             # print 'deltaR:', deltaR(tau, cand)
@@ -440,6 +444,7 @@ class TauHLTAnalyzer(Analyzer):
         variables = {
             'ptSumIso': tau.isolationPFCands(),
             'chargedPtSumIso': TauHLTAnalyzer.tauChargedFilteredIso(tau),
+            'chargedPtSumIsoOutsideSignalCone': TauHLTAnalyzer.tauChargedFilteredIso(tau, onlyOutsideSignalCone=True),
             'chargedPtSumIso04': TauHLTAnalyzer.tauChargedFilteredIso(tau, maxDeltaR=0.4),
             'chargedPtSumIso03': TauHLTAnalyzer.tauChargedFilteredIso(tau, maxDeltaR=0.3),
             'chargedPUPtSumIso': TauHLTAnalyzer.tauChargedFilteredIso(tau, minDeltaZ=0.2, maxDeltaZ=99999., cands=pfCandidates, maxDeltaR=maxDeltaR),

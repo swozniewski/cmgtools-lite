@@ -18,13 +18,14 @@ only_stack = False
 
 total_weight = '1'
 tree_prod_name = 'HLTTauTreeProducer'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSRecoverMoreInfo'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/trigger/CMSSW_9_1_0_pre3/src/CMGTools/H2TauTau/cfgPython/generic/HPSatHLT_relax1p2p'
 int_lumi = 1.
 
 samples = [
     SampleCfg(name='ggH135', dir_name='ggH135_rawaod', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_1', dir_name='ggH135_rawaod_1', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
     SampleCfg(name='ggH135_2', dir_name='ggH135_rawaod_2', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_3', dir_name='ggH135_rawaod_3', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
 ]
 
 g_cuts = {}
@@ -34,14 +35,20 @@ g_cuts['inclusive'] = '(((hlt_single_tau_pt>20 || hlt_tau_pt > 20 || hlt_classic
 # g_cuts['offline_tau'] = '(tau_pt > 20)'
 
 
-tau_names = ['tau_dm', 'hlt_single_tau_dm', 'tau', 'hlt_single_tau', 'hlt_classic_single_tau'] # 'hlt_tau', 'hlt_classic_tau', 
+tau_names = ['tau_dm', 'hlt_single_tau_dm', 'tau', 'hlt_single_tau', 'hlt_single_tau_neutral', 'hlt_single_tau_outside', 'hlt_classic_single_tau'] # 'hlt_tau', 'hlt_classic_tau', 
+tau_names = ['tau_dm', 'hlt_single_tau_dm', 'hlt_single_tau_newDM', 'tau', 'hlt_single_tau', 'hlt_single_tau_neutral', 'hlt_single_tau_outside', 'hlt_classic_single_tau'] # 'hlt_tau', 'hlt_classic_tau', 
 
-reco_tau_20 = 'tau_pt>20 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==10) && tau_loose_db_iso>0.5'
-reco_tau_40 = 'tau_pt>40 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==10) && tau_loose_db_iso>0.5'
+reco_tau_20 = 'tau_pt>20 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==10 || tau_decayMode==11) && tau_loose_db_iso>0.5'
+reco_tau_40 = 'tau_pt>40 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==10 || tau_decayMode==11) && tau_loose_db_iso>0.5'
+reco_tau_35 = 'tau_pt>35 && (tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==10 || tau_decayMode==11) && tau_loose_db_iso>0.5'
 
 sb_cuts = {
     'gen_tau_45_reco_tau_40':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>45 && abs(tau_gen_eta)<2.3) && ' + reco_tau_40,
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
+    },
+    'gen_tau_35_reco_tau_35':{
+        's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>35 && abs(tau_gen_eta)<2.3) && ' + reco_tau_40,
         'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
     'gen_tau_25_reco_tau_20':{
@@ -76,6 +83,10 @@ sb_cuts = {
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>45 && abs(tau_gen_eta)<2.3)',
         'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
     },
+    'gen_tau_35':{
+        's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>35 && abs(tau_gen_eta)<2.3)',
+        'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
+    },
     'gen_tau_25':{
         's':'&& (abs(tau_gen_pdgId)==15 && tau_gen_pt>25 && abs(tau_gen_eta)<2.3)',
         'b':'&& ((abs(tau_gen_eta)<2.3) && (tau_gen_pdgId>20 || abs(tau_gen_pdgId)<6))'
@@ -108,8 +119,8 @@ sb_cuts = {
 
 
 vars = {
-    # 'chargedPt':'abs({tau}_chargedPtSumIso)',
-    'chargedPt04':'abs({tau}_chargedPtSumIso04)',
+    'chargedPt':'abs({tau}_chargedPtSumIso)',
+    # 'chargedPt04':'abs({tau}_chargedPtSumIso04)',
     # 'chargedPtRel':'abs({tau}_chargedPtSumIso/{tau}_pt)',
     # 'rhoCorr':'abs({tau}_chargedPtSumIso) + max({tau}_gammaPtSumIso - rho*0.1752, 0)'
 }
@@ -157,10 +168,27 @@ for var_name, var in vars.items():
                 extra_draw_var = ''
                 if 'dm' in tau_name:
                     tau_name = tau_name[:-3]
-                    extra_draw_var = ' + 200.*(!({tau}_decayMode==0 || {tau}_decayMode==1 || {tau}_decayMode==10))'.format(tau=tau_name)
+                    extra_draw_var = ' + 200.*(!({tau}_decayMode==0 || {tau}_decayMode==1 || {tau}_decayMode==10 || {tau}_decayMode==11))'.format(tau=tau_name)
+                if 'newDM' in tau_name:
+                    tau_name = tau_name[:-6]
+                    extra_draw_var = ' + 200.*(!({tau}_decayMode>=0 && {tau}_decayMode<=12))'.format(tau=tau_name)
 
-                tree.Draw((var+'{e}:{tau}_pt>>{h}').format(e=extra_draw_var, tau=tau_name, h=hist_s_name), cut_s)
-                tree.Draw((var+'{e}:{tau}_pt>>{h}').format(e=extra_draw_var, tau=tau_name, h=hist_b_name), cut_b)
+                addNeutral = False
+                if tau_name == 'hlt_single_tau_neutral':
+                    tau_name = 'hlt_single_tau'
+                    addNeutral = True
+
+                draw_var = var
+                if tau_name == 'hlt_single_tau_outside':
+                    draw_var = var.replace('_chargedPtSumIso', '_chargedPtSumIsoOutsideSignalCone')
+                    tau_name = 'hlt_single_tau'
+
+                tau_pt_name = tau_name+'_pt'
+                if addNeutral:
+                    tau_pt_name += '+ ((hlt_classic_single_tau_pt>0)*hlt_classic_single_tau_neutralCandsPtSumSignal)'
+
+                tree.Draw((draw_var+'{e}:{tau_pt}>>{h}').format(e=extra_draw_var, tau=tau_name, tau_pt=tau_pt_name, h=hist_s_name), cut_s)
+                tree.Draw((draw_var+'{e}:{tau_pt}>>{h}').format(e=extra_draw_var, tau=tau_name, tau_pt=tau_pt_name, h=hist_b_name), cut_b)
 
                 # Find max eff_s for given eff_b
 
@@ -190,7 +218,7 @@ for var_name, var in vars.items():
                     print ' for eff_b', best_eff_b, 'while target was', target_eff_b
                     print ' cut x', xmin + best_i_x*(xmax-xmin)/n_bins_x, 'cut y', ymin + best_i_y*(ymax-ymin)/n_bins_y
 
-                    effs[dict_tau_name].append((best_eff_b, best_eff_s))
+                    effs[dict_tau_name].append((best_eff_b, best_eff_s, hist_s.GetXaxis().GetBinCenter(best_i_x), hist_s.GetYaxis().GetBinCenter(best_i_y)))
 
             import pickle
-            pickle.dump(effs, open('effsnopuno15_{v}_{d}_{c}.pkl'.format(v=var_name, d=cut_name, c=signal_cut_name), 'wb'))
+            pickle.dump(effs, open('effs_{v}_{d}_{c}.pkl'.format(v=var_name, d=cut_name, c=signal_cut_name), 'wb'))

@@ -9,22 +9,24 @@ officialStyle(gStyle)
 
 total_weight = '1'
 tree_prod_name = 'HLTTauTreeProducer'
-analysis_dir = '/afs/cern.ch/user/s/steggema/work/80/CMSSW_8_0_21/src/CMGTools/H2TauTau/cfgPython/generic/HPSPlusGenRecoverNeutralsNoPt15'
+analysis_dir = '/afs/cern.ch/user/s/steggema/work/trigger/CMSSW_9_1_0_pre3/src/CMGTools/H2TauTau/cfgPython/generic/HPSatHLT_relax1p2p'
 int_lumi = 1.
 
 samples = [
     SampleCfg(name='ggH135', dir_name='ggH135_rawaod', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_1', dir_name='ggH135_rawaod_1', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
     SampleCfg(name='ggH135_2', dir_name='ggH135_rawaod_2', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
+    SampleCfg(name='ggH135_3', dir_name='ggH135_rawaod_3', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=1., sumweights=1.),
 ]
 
-tau_dm_string = '(tau_pt>30)*((tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2 || tau_decayMode==10)*(tau_decayMode - 8*(tau_decayMode==10) - 1*(tau_decayMode==2)) - 1 *(!(tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2|| tau_decayMode==10) && tau_decayMode>0 && tau_decayMode<200) - 2 *(!(tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2 || tau_decayMode==10) && (tau_decayMode<0 || tau_decayMode>=200))) - 2*(tau_pt<30)'
+tau_dm_string = '(tau_pt>30)*((tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2 || tau_decayMode==10 || tau_decayMode==11)*(tau_decayMode - 8*(tau_decayMode==10) - 8*(tau_decayMode==11) - 1*(tau_decayMode==2)) - 1 *(!(tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2|| tau_decayMode==10|| tau_decayMode==11) && tau_decayMode>0 && tau_decayMode<200) - 2 *(!(tau_decayMode==0 || tau_decayMode==1 || tau_decayMode==2 || tau_decayMode==10 || tau_decayMode==11) && (tau_decayMode<0 || tau_decayMode>=200))) - 2*(tau_pt<30)'
 
 variables = [
-    VariableCfg(name='dm_migration_rec_hlt', drawname=tau_dm_string.replace('tau', 'hlt_single_tau')+':'+tau_dm_string, binning={'nbinsx':5, 'xmin':-2, 'xmax':3, 'nbinsy':5, 'ymin':-2, 'ymax':3}, unit=None, xtitle='Offline DM', ytitle='HLT DM'),
-    VariableCfg(name='dm_migration_hlt_rec', drawname=tau_dm_string+':'+tau_dm_string.replace('tau', 'hlt_single_tau'), binning={'nbinsx':5, 'xmin':-2, 'xmax':3, 'nbinsy':5, 'ymin':-2, 'ymax':3}, unit=None, xtitle='HLT DM', ytitle='Offline DM'),
-    VariableCfg(name='dm_migration_gen_rec', drawname=tau_dm_string+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':5, 'xmin':-2, 'xmax':3, 'nbinsy':5, 'ymin':-2, 'ymax':3}, unit=None, xtitle='Gen DM', ytitle='Offline DM'),
-    VariableCfg(name='dm_migration_gen_hlt', drawname=tau_dm_string.replace('tau', 'hlt_single_tau')+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':5, 'xmin':-2, 'xmax':3, 'nbinsy':5, 'ymin':-2, 'ymax':3}, unit=None, xtitle='Gen DM', ytitle='HLT DM'),
-    VariableCfg(name='dm_migration_gen_shrinkinghlt', drawname='-(hlt_classic_single_tau_pt>20) - 2 *(hlt_classic_single_tau_pt<20) '+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':5, 'xmin':-2, 'xmax':3, 'nbinsy':5, 'ymin':-2, 'ymax':3}, unit=None, xtitle='Gen DM', ytitle='HLT DM'),
+    VariableCfg(name='dm_migration_rec_hlt', drawname=tau_dm_string.replace('tau', 'hlt_single_tau')+':'+tau_dm_string, binning={'nbinsx':6, 'xmin':-2, 'xmax':4, 'nbinsy':6, 'ymin':-2, 'ymax':4}, unit=None, xtitle='Offline DM', ytitle='HLT DM'),
+    VariableCfg(name='dm_migration_hlt_rec', drawname=tau_dm_string+':'+tau_dm_string.replace('tau', 'hlt_single_tau'), binning={'nbinsx':6, 'xmin':-2, 'xmax':4, 'nbinsy':6, 'ymin':-2, 'ymax':4}, unit=None, xtitle='HLT DM', ytitle='Offline DM'),
+    VariableCfg(name='dm_migration_gen_rec', drawname=tau_dm_string+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':6, 'xmin':-2, 'xmax':4, 'nbinsy':6, 'ymin':-2, 'ymax':4}, unit=None, xtitle='Gen DM', ytitle='Offline DM'),
+    VariableCfg(name='dm_migration_gen_hlt', drawname=tau_dm_string.replace('tau', 'hlt_single_tau')+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':6, 'xmin':-2, 'xmax':4, 'nbinsy':6, 'ymin':-2, 'ymax':4}, unit=None, xtitle='Gen DM', ytitle='HLT DM'),
+    VariableCfg(name='dm_migration_gen_shrinkinghlt', drawname='-(hlt_classic_single_tau_pt>20) - 2 *(hlt_classic_single_tau_pt<20) '+':'+tau_dm_string.replace('tau', 'tau_gen'), binning={'nbinsx':6, 'xmin':-2, 'xmax':4, 'nbinsy':6, 'ymin':-2, 'ymax':4}, unit=None, xtitle='Gen DM', ytitle='HLT DM'),
 ]
 
 cut = 'tau_gen_pt>40 && abs(tau_gen_eta)<2.3'# && abs(tau_gen_pdgId)==15 && ((hlt_single_tau_pt>20 && abs(hlt_single_tau_eta)<2.3) || (tau_pt > 20 && abs(tau_eta) < 2.3))'
@@ -38,7 +40,7 @@ for var in variables:
 
     hist = plot.GetStack().totalHist.weighted
 
-    label = ['None', 'Other', '#pi', '#pi#pi^{0}s', '#pi#pi#pi']
+    label = ['None', 'Other', '#pi', '#pi#pi^{0}s', '#pi#pi#pi', '#pi#pi#pi#pi^{0}s']
     for xbin in range(1, hist.GetXaxis().GetNbins()+1):
         hist.GetXaxis().SetBinLabel(xbin, label[xbin-1])
         hist.GetYaxis().SetBinLabel(xbin, label[xbin-1])
