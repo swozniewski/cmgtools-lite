@@ -53,7 +53,7 @@ if tes_up:
 
 # Just to be sure
 if production:
-    syncntuple = False
+    # syncntuple = False
     pick_events = False
 
 if reapplyJEC:
@@ -103,7 +103,8 @@ tauTauAna = cfg.Analyzer(
     from_single_objects=False,
     ignoreTriggerMatch=True, 
     scaleTaus=calibrateTaus or scaleTaus,
-    tes_scale=tes_scale
+    tes_scale=tes_scale,
+    tauEnergyScale=True,
 )
 
 if not cmssw:
@@ -247,10 +248,11 @@ from CMGTools.H2TauTau.proto.samples.summer16.sms import samples_susy
 from CMGTools.H2TauTau.proto.samples.summer16.triggers_tauTau import mc_triggers, mc_triggerfilters, data_triggers, data_triggerfilters
 
 data_list = data_tau
-samples = backgrounds + sm_signals + sync_list #+ mssm_signals 
+# samples = backgrounds + sm_signals + sync_list #+ mssm_signals 
+samples = [sync_list[0]]
 if doSUSY:
     samples = samples_susy #+ SignalSUSY[:1]
-split_factor = 1e5
+split_factor = 1e4
 
 for sample in data_list:
     sample.triggers = data_triggers
@@ -339,7 +341,7 @@ if not production:
     selectedComponents = [samples_susy[2]] if doSUSY else sync_list
     if data:
         selectedComponents = [data_list[0]]
-    selectedComponents = selectedComponents[:1]
+    selectedComponents = [selectedComponents[0]]
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.fineSplitFactor = 1
