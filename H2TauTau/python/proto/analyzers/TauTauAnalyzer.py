@@ -184,7 +184,7 @@ class TauTauAnalyzer(DiLeptonAnalyzer):
             pyl = Muon(lep)
             pyl.associatedVertex = event.goodVertices[0]
             pyl.event = event.input.object()
-            if not pyl.muonIDMoriond17():
+            if not pyl.muonID("POG_ID_Medium_Moriond"):
                 continue
             if not pyl.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0) < 0.3:
                 continue
