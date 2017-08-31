@@ -82,8 +82,8 @@ class METFilter(Analyzer):
             event.passcloneGlobalMuonFilter = True
             return True
 
-        event.passBadGlobalMuonFilter = self.handles['badGlobalMuonTagger'].product()[0]
-        event.passcloneGlobalMuonFilter = self.handles['cloneGlobalMuonTagger'].product()[0]
+        event.passBadGlobalMuonFilter = not self.handles['badGlobalMuonTagger'].product()[0]
+        event.passcloneGlobalMuonFilter = not self.handles['cloneGlobalMuonTagger'].product()[0]
         if event.passBadGlobalMuonFilter:
             self.count.inc('bad global muon')
         if event.passcloneGlobalMuonFilter:
