@@ -63,11 +63,10 @@ double getMuToTauWeightLoose(double eta) {
 
 double getEToTauWeightVLoose(double eta) {
     auto aeta = std::abs(eta);
-    if (aeta < 1.46)
+    if (aeta < 1.5)
         return 1.21;
-    if (aeta > 1.558)
+    else
         return 1.38;
-    return 1.;
 }
 
 double getTauWeight(int gen_match, double pt, double eta, double dm) {
