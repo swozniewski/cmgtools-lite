@@ -14,6 +14,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauP4Scaler import TauP4Scaler
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 from CMGTools.H2TauTau.proto.analyzers.L1TriggerAnalyzer import L1TriggerAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.MT2Analyzer import MT2Analyzer
+from CMGTools.H2TauTau.proto.analyzers.TauIDWeighter import TauIDWeighter
 from CMGTools.H2TauTau.proto.analyzers.METFilter import METFilter
 
 # common configuration and sequence
@@ -32,8 +33,8 @@ def getHeppyOption(option, default):
 production = getHeppyOption('production', False)
 pick_events = getHeppyOption('pick_events', False)
 syncntuple = getHeppyOption('syncntuple', True)
-cmssw = getHeppyOption('cmssw', False)
-doSUSY = getHeppyOption('susy', True)
+cmssw = getHeppyOption('cmssw', True)
+doSUSY = getHeppyOption('susy', False)
 computeSVfit = getHeppyOption('computeSVfit', False)
 data = getHeppyOption('data', False)
 tes_string = getHeppyOption('tes_string', '') # '_tesup' '_tesdown'
@@ -53,7 +54,7 @@ if tes_up:
 
 # Just to be sure
 if production:
-    # syncntuple = False
+    syncntuple = False
     pick_events = False
 
 if reapplyJEC:
@@ -162,7 +163,7 @@ tau1Weighter = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_tau1',
     scaleFactorFiles={
-        'trigger': ('$CMSSW_BASE/src/CMGTools/H2TauTau/data/htt_scalefactors_v16_5.root', 't_genuine_TightIso_tt'),
+        'trigger': ('$CMSSW_BASE/src/CMGTools/H2TauTau/data/htt_scalefactors_v16_5.root', 't_genuine_MediumIso_tt'),
         # 'trigger': '$CMSSW_BASE/src/CMGTools/H2TauTau/data/Tau_diTau35_summer16.py',  # include in the event's overall weight
     },
 
@@ -179,7 +180,7 @@ tau2Weighter = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_tau2',
     scaleFactorFiles={
-        'trigger': ('$CMSSW_BASE/src/CMGTools/H2TauTau/data/htt_scalefactors_v16_5.root', 't_genuine_TightIso_tt'),
+        'trigger': ('$CMSSW_BASE/src/CMGTools/H2TauTau/data/htt_scalefactors_v16_5.root', 't_genuine_MediumIso_tt'),
         # 'trigger': '$CMSSW_BASE/src/CMGTools/H2TauTau/data/Tau_diTau35_summer16.py',  # include in the event's overall weight
     },
 
@@ -238,6 +239,12 @@ metFilter = cfg.Analyzer(
     ]
 )
 
+tauIDWeighter = cfg.Analyzer(
+    TauIDWeighter,
+    name='TauIDWeighter',
+    legs=['leg1', 'leg2']
+)
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
@@ -248,11 +255,10 @@ from CMGTools.H2TauTau.proto.samples.summer16.sms import samples_susy
 from CMGTools.H2TauTau.proto.samples.summer16.triggers_tauTau import mc_triggers, mc_triggerfilters, data_triggers, data_triggerfilters
 
 data_list = data_tau
-# samples = backgrounds + sm_signals + sync_list #+ mssm_signals 
-samples = [sync_list[0]]
+samples = backgrounds + sm_signals + sync_list + mssm_signals 
 if doSUSY:
     samples = samples_susy #+ SignalSUSY[:1]
-split_factor = 1e4
+split_factor = 1e5
 
 for sample in data_list:
     sample.triggers = data_triggers
@@ -296,6 +302,8 @@ sequence.insert(sequence.index(httGenAna)+1, tauTauAna)
 sequence.append(tauDecayModeWeighter)
 sequence.append(tau1Weighter)
 sequence.append(tau2Weighter)
+if syncntuple:
+    sequence.append(tauIDWeighter)
 sequence.append(tauTauMT2Ana)
 sequence.append(metFilter)
 if doSUSY:
@@ -313,7 +321,7 @@ if not cmssw:
 ###             CHERRY PICK EVENTS              ###
 ###################################################
 if pick_events:
-    evtsToPick = [7125, 7204, 19150, 19157, 30297, 67087, 74521, 87615, 93964, 13385, 19948, 21748, 22048, 68695, 68980, 90677, 4019, 5003, 5228, 33261, 48241, 40571, 17727, 42382, 42762, 52834, 52756, 76821, 70141, 4266, 26879, 36797, 92495, 401, 3451, 3526, 32430, 15065, 48579, 44338, 88971, 6115, 55642, 1616, 43645, 51727, 57548, 27953, 22307, 38311, 43239, 43257, 55067, 62198, 76475, 79555, 45228, 91707]
+    evtsToPick = [88930, 26229, 66496, 30256, 57121, 75121, 61113]
 
     eventSelector.toSelect = evtsToPick
     sequence.insert(0, eventSelector)
@@ -361,7 +369,6 @@ if cmssw:
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
-
 config = cfg.Config(components=selectedComponents,
                     sequence=sequence,
                     services=outputService,
