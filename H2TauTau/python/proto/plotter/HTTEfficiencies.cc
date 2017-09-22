@@ -43,7 +43,7 @@ double getTauIDWeight(double pt, double eta, double dm) { // yeah double dm
     // auto args = std::vector<double>{pt, eta, dm};
     // auto weight = tau_id_weight->eval(args.data());
     // std::cout << "Tau ID weight for pt, eta, dm" << pt << ", " << eta << ", " << dm << " is " << weight << std::endl;
-    return 0.95;
+    return 0.97;
 }
 
 double getMuToTauWeightLoose(double eta) {
@@ -65,8 +65,8 @@ double getEToTauWeightVLoose(double eta) {
     auto aeta = std::abs(eta);
     if (aeta < 1.46)
         return 1.21;
-    if (aeta < 0.8)
-        return 1.12;
+    if (aeta > 1.558)
+        return 1.38;
     return 1.;
 }
 
