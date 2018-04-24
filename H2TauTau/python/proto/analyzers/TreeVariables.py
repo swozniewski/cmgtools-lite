@@ -24,7 +24,7 @@ event_vars = [
     Variable('orbit_number', lambda ev : (ev.input.eventAuxiliary().orbitNumber() * ev.input.eventAuxiliary().isRealData()), type=int),
     Variable('is_data', lambda ev: ev.input.eventAuxiliary().isRealData(), type=int),
     Variable('nPU', lambda ev : -99 if getattr(ev, 'nPU', -1) is None else getattr(ev, 'nPU', -1)),
-    Variable('pass_leptons', lambda ev : ev.isSignal, type=int),
+    # Variable('pass_leptons', lambda ev : ev.isSignal, type=int),
     Variable('veto_dilepton', lambda ev : not ev.leptonAccept, type=int),
     Variable('veto_thirdlepton', lambda ev : not ev.thirdLeptonVeto, type=int),
     Variable('veto_otherlepton', lambda ev : not ev.otherLeptonVeto, type=int),
@@ -52,16 +52,15 @@ event_vars = [
     # Variable('delta_phi_dil_jet2', lambda ev : deltaPhi(ev.diLepton.p4().phi(), ev.cleanJets[1].phi()) if len(ev.cleanJets)>1 else -999.),
     # Variable('delta_eta_dil_jet1', lambda ev : abs(ev.diLepton.p4().eta() - ev.cleanJets[0].eta()) if len(ev.cleanJets)>0 else -999.),
     # Variable('delta_eta_dil_jet2', lambda ev : abs(ev.diLepton.p4().eta() - ev.cleanJets[1].eta()) if len(ev.cleanJets)>1 else -999.),
+    Variable('Flag_goodVertices', type=int),
+    Variable('Flag_globalTightHalo2016Filter', type=int),
     Variable('Flag_HBHENoiseFilter', type=int),
     Variable('Flag_HBHENoiseIsoFilter', type=int),
     Variable('Flag_EcalDeadCellTriggerPrimitiveFilter', type=int),
-    Variable('Flag_goodVertices', type=int),
+    Variable('Flag_BadPFMuonFilter', type=int),
+    Variable('Flag_BadChargedCandidateFilter', type=int),
     Variable('Flag_eeBadScFilter', type=int),
-    Variable('Flag_globalTightHalo2016Filter', type=int),
-    Variable('passBadMuonFilter', type=int),
-    Variable('passBadChargedHadronFilter', type=int),
-    Variable('badMuonMoriond2017', type=int),
-    Variable('badCloneMuonMoriond2017', type=int)
+    Variable('Flag_ecalBadCalibFilter', type=int),
 ]
 
 # di-tau object variables
@@ -79,10 +78,10 @@ ditau_vars = [
     Variable('mt', lambda dil : dil.mTLeg1()),
     Variable('mt_leg2', lambda dil : dil.mTLeg2()),
     # Variable('mt_leg1', lambda dil : dil.mTLeg1()), # redundant
-    Variable('met_cov00', lambda dil : dil.mvaMetSig(0, 0) if dil.mvaMetSig else 0.),
-    # Variable('met_cov01', lambda dil : dil.mvaMetSig(0, 1) if dil.mvaMetSig else 0.), # redundant
-    Variable('met_cov10', lambda dil : dil.mvaMetSig(1, 0) if dil.mvaMetSig else 0.),
-    Variable('met_cov11', lambda dil : dil.mvaMetSig(1, 1) if dil.mvaMetSig else 0.),
+    # Variable('met_cov00', lambda dil : dil.mvaMetSig(0, 0) if dil.mvaMetSig else 0.),
+    # # Variable('met_cov01', lambda dil : dil.mvaMetSig(0, 1) if dil.mvaMetSig else 0.), # redundant
+    # Variable('met_cov10', lambda dil : dil.mvaMetSig(1, 0) if dil.mvaMetSig else 0.),
+    # Variable('met_cov11', lambda dil : dil.mvaMetSig(1, 1) if dil.mvaMetSig else 0.),
     Variable('met_phi', lambda dil : dil.met().phi()),
     # Variable('met_px', lambda dil : dil.met().px()),
     # Variable('met_py', lambda dil : dil.met().py()),
@@ -168,9 +167,9 @@ muon_vars = [
 # tau
 tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode(), type=int),
-    Variable('zImpact', lambda tau : tau.zImpact()),
-    Variable('dz_selfvertex', lambda tau : tau.vertex().z() - tau.associatedVertex.position().z()),
-    Variable('ptScale', lambda tau : getattr(tau, 'ptScale', -999.)),
+    # Variable('zImpact', lambda tau : tau.zImpact()),
+    # Variable('dz_selfvertex', lambda tau : tau.vertex().z() - tau.associatedVertex.position().z()),
+    # Variable('ptScale', lambda tau : getattr(tau, 'ptScale', -999.)),
 ]
 for tau_id in tauIDs:
     if type(tau_id) is str:
