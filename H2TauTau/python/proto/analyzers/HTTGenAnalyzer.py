@@ -254,7 +254,7 @@ class HTTGenAnalyzer(Analyzer):
             if dR2best < dR2 and l1match.pt() > 10.:
                 leg.genp = PhysicsObject(l1match)
 
-                jet, dR2best = bestMatch(l1match, event.jets)
+                jet, dR2best = bestMatch(l1match, getattr(event, 'jets', []))
 
                 if dR2best < dR2:
                     leg.genp.detFlavour = jet.partonFlavour()
