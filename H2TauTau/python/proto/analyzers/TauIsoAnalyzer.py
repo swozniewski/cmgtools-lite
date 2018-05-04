@@ -102,7 +102,8 @@ class TauIsoAnalyzer(Analyzer):
                 or track.hitPattern().numberOfValidHits() < minTrackHits
                 or abs(track.dz(pv)) > maxDeltaZ
                 or abs(track.dz(pv)) < minDeltaZ
-                or abs(track.dxy(pv)) > maxTransverseImpactParameter)
+                or abs(track.dxy(pv)) > maxTransverseImpactParameter
+                or track.pt()/abs(track.dz(pv)) < 25.0)
 
     @staticmethod
     def tauPhotonsOutsideSignalCone(tau):
@@ -143,5 +144,5 @@ class TauIsoAnalyzer(Analyzer):
         for k, v in variables.items():
             ptsum = 0.
             for i in v:
-                ptsum += i.pt()
+                ptsum += i.pt()/(1.0+20.0*i.dz(tau.vertex()))
             setattr(tau, k, ptsum)

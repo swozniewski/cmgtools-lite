@@ -1,5 +1,6 @@
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerBase import H2TauTauTreeProducerBase
 from CMGTools.H2TauTau.proto.analyzers.tau_utils import n_photons_tau, e_over_h, tau_pt_weighted_dr_iso, tau_pt_weighted_dphi_strip, tau_pt_weighted_deta_strip, tau_pt_weighted_dr_signal
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, bestMatch
 
 class TauIsoTreeProducer(H2TauTauTreeProducerBase):
     ''' Tree producer for tau POG study.
@@ -39,6 +40,12 @@ class TauIsoTreeProducer(H2TauTauTreeProducerBase):
         self.tree.var('tau_n_iso_ch', type=int, default=0)
         self.tree.vector('tau_iso_ch_dz', 'tau_n_iso_ch', maxlen=99, type=float)
         self.tree.vector('tau_iso_ch_pt', 'tau_n_iso_ch', maxlen=99, type=float)
+        self.tree.vector('tau_iso_ch_pxy', 'tau_n_iso_ch', maxlen=99, type=float)
+        self.tree.vector('tau_iso_ch_deltR', 'tau_n_iso_ch', maxlen=99, type=float)
+        
+        self.tree.var('tau_n_iso_gamma', type=int, default=0)
+        self.tree.vector('tau_iso_gamma_pt', 'tau_n_iso_gamma', maxlen=99, type=float)
+        self.tree.vector('tau_iso_gamma_deltR', 'tau_n_iso_gamma', maxlen=99, type=float)
 
         self.tree.var('tau_ptSumIso_recalc')
         self.tree.var('tau_chargedIsoPtSum_recalc')
@@ -102,11 +109,26 @@ class TauIsoTreeProducer(H2TauTauTreeProducerBase):
                 self.tree.fill('tau_n_iso_ch', tau.isolationChargedHadrCands().size())
                 dzs = []
                 pts = []
+                dxys = []
+                dRs = []
                 for iso_ch in tau.isolationChargedHadrCands():
                     dzs.append(iso_ch.dz(tau.vertex()))
                     pts.append(iso_ch.pt())
+                    dxys.append(iso_ch.dxy(tau.vertex()))
+                    dRs.append(deltaR(tau, iso_ch))
                 self.tree.vfill('tau_iso_ch_dz', dzs)
                 self.tree.vfill('tau_iso_ch_pt', pts)
+                self.tree.vfill('tau_iso_ch_pxy', dxys)
+                self.tree.vfill('tau_iso_ch_deltR', dRs)
+                
+                self.tree.fill('tau_n_iso_gamma', tau.isolationGammaCands().size())
+                gpts = []
+                gdRs = []
+                for iso_gamma in tau.isolationGammaCands():
+                    gpts.append(iso_gamma.pt())
+                    gdRs.append(deltaR(tau, iso_gamma))
+                self.tree.vfill('tau_iso_gamma_pt', pts)
+                self.tree.vfill('tau_iso_gamma_deltR', dRs)
 
                 self.tree.fill('tau_ptSumIso_recalc', tau.ptSumIso)
                 self.tree.fill('tau_chargedIsoPtSum_recalc', tau.chargedPtSumIso)
